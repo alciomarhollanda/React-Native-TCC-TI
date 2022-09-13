@@ -1,5 +1,6 @@
-import * as React from 'react';
+import { useState, useEffect  } from "react";
 import { Button, View, Text } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -33,6 +34,53 @@ function NotificationsScreen({ navigation }) {
   );
 }
 
+
+
+
+function RegsScreen({ navigation }) {
+
+  const [isLoading, setLoading] = useState(true);
+  const [data, setData] = useState([]);
+
+
+  useEffect(() => {
+    getMovies();
+  }, []);
+
+  const getMovies = async () => {
+    try {
+     const response = await fetch('http://localhost/phpBase2022/api/index.php');
+     const json = await response.json();
+     setData(json);
+   } catch (error) {
+     console.error(error);
+   } finally {
+     setLoading(false);
+   }
+ }
+
+
+
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Text>Reges Screen</Text>
+      <Button onPress={() => navigation.goBack()} title="Go back home" />
+
+      {isLoading ? <ActivityIndicator/> : (
+        <FlatList
+          data={data}
+          keyExtractor={({ id }, index) => id}
+          renderItem={({ item }) => (
+            <Text>{item.username}, {item.image}</Text>
+          )}
+        />
+      )}
+    </View>
+  );
+}
+
+
+
 const Drawer = createDrawerNavigator();
 
 function MainDrawer() {
@@ -53,6 +101,7 @@ function MainDrawer() {
     }}>
         <Drawer.Screen name="Home" component={HomeScreen} />
         <Drawer.Screen name="Notifications" component={NotificationsScreen} />
+        <Drawer.Screen name="Usuários" component={RegsScreen} />
     </Drawer.Navigator>
   );
 }

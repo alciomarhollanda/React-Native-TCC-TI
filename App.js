@@ -1,10 +1,13 @@
 import { useState, useEffect  } from "react";
-import { Button, View, Text } from 'react-native';
+import { Button, View, Text, Image } from 'react-native';
 import { ActivityIndicator, FlatList, StyleSheet, StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import CustomDrawer from './src/components/CustomDrawer';
+
+
+import axios from 'axios';
 
 
 function HomeScreen({ navigation }) {
@@ -42,9 +45,11 @@ function RegsScreen({ navigation }) {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
 
+  const baseUrl = 'http://localhost/phpBase2022';
+
 
   useEffect(() => {
-    getMovies();
+    fetchUser();
   }, []);
 
   const getMovies = async () => {
@@ -52,6 +57,7 @@ function RegsScreen({ navigation }) {
      const response = await fetch('http://localhost/phpBase2022/api/index.php');
      const json = await response.json();
      setData(json);
+     console.log(json)
    } catch (error) {
      console.error(error);
    } finally {
@@ -59,22 +65,42 @@ function RegsScreen({ navigation }) {
    }
  }
 
+ // Invoking get method to perform a GET request
+const fetchUser = async () => {
+
+  try {
+    const url = `${baseUrl}/api/index.php`;
+    const response = await axios.get(url);
+    // console.log(response.data);
+    setData(response.data);
+  } catch (error) {
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
 
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Reges Screen</Text>
-      <Button onPress={() => navigation.goBack()} title="Go back home" />
+
 
       {isLoading ? <ActivityIndicator/> : (
         <FlatList
           data={data}
           keyExtractor={({ id }, index) => id}
           renderItem={({ item }) => (
-            <Text>{item.username}, {item.image}</Text>
+            <View style={{flexDirection:'row', padding:10 , alignItems:"center"}}>
+              <Image source={{uri: `${baseUrl}/${item.image}`}} style={{width: 40, height: 40, borderRadius:100}} />
+              <Text>  {item.username}</Text>
+            </View>
           )}
         />
       )}
+
+      <Text>Reges Screen</Text>
+      <Button onPress={() => navigation.goBack()} title="Go back home" />
     </View>
   );
 }
@@ -151,6 +177,7 @@ function App() {
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Profile" component={Profile} />
         <Stack.Screen name="Settings" component={Settings} />
+        {/* <Stack.Screen name="Usuários" component={RegsScreen} /> */}
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -49,7 +49,7 @@ function RegsScreen({ navigation }) {
 
 
   useEffect(() => {
-    fetchUser();
+    getMovies();
   }, []);
 
   const getMovies = async () => {

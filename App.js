@@ -54,7 +54,7 @@ function RegsScreen({ navigation }) {
 
   const getMovies = async () => {
     try {
-     const response = await fetch('http://localhost/phpBase2022/api/index.php');
+     const response = await fetch(`${baseUrl}/api/index.php`);
      const json = await response.json();
      setData(json);
      console.log(json)
